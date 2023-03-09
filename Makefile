@@ -1,15 +1,18 @@
+SRC = src
+INC = $(SRC)/include
+BIN = bin
+
 CXX      = clang++
 CXXFLAGS = -g3 -Ofast -std=c++20 -Wall -Wextra -Wpedantic -Wshadow -Werror
-LDFLAGS  = -g3 -Wc -fsanitize=address -fsanitize=undefined
+LDFLAGS  = -g3 -Wc
+#  -fsanitize=address -fsanitize=undefined
+IFLAGS = -I$(INC)
 
-SRC = src
-INC = src/include
-BIN = bin
-OBJ = $(BIN)/obj
 
-SOURCE_FILES  = siff.cpp main.cpp
+INCLUDES = $(shell echo $(INC)/*.h)
+SOURCES = $(shell echo $(SRC)/*.cpp)
 
-OBJECT_FILES  = $(SOURCE_FILES:%.cpp=$(OBJ)/%.o)
+OBJECTS = $(SOURCES:$(SRC)/%.cpp=$(BIN)/%.o)
 
 build: siff
 
@@ -19,12 +22,11 @@ clean:
 	@echo Cleaning executable
 	@rm siff
 
-siff: $(OBJECT_FILES)
+siff: $(OBJECTS)
 	@echo Generating executable
 	@$(CXX) $(LDFLAGS) -o $@ $^
 
-$(OBJECT_FILES): $(OBJ)/%.o: $(SRC)/%.cpp $(INC)/array.h $(INC)/%.h
+$(OBJECTS): $(BIN)/%.o: $(SRC)/%.cpp $(INCLUDES)
 	@mkdir -p $(@D)
 	@echo Compiling $< to $@
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
-

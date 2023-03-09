@@ -54,8 +54,12 @@ private:
     };
 
     void read_lines(array<Line *> &lines, std::string input);
-    void backtrack(array<Line *> &lines_1, array<Line *> &lines_2);
-    void siff(array<Line *> &lines_1, array<Line *> &lines_2);
+    void backtrack();
+    void get_edits();
+    void print_edits();
+
+    array<Line *> lines_1;
+    array<Line *> lines_2;
 
     array<array<int>> trace;
     array<Edit> edits;

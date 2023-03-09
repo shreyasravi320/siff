@@ -2,38 +2,15 @@
 
 Siff::Siff(std::string file_1, std::string file_2)
 {
-    array<Line *> lines_1, lines_2;
     read_lines(lines_1, file_1);
     read_lines(lines_2, file_2);
 
-    siff(lines_1, lines_2);
+    get_edits();
+    print_edits();
+}
 
-    // std::cout << "\033[1;31mTESTING\033[0m\n";
-      // del:     "\e[31m",
-      // ins:     "\e[32m",
-      // default: "\e[39m"
-    for (int i = edits.size() - 1; i >= 0; i--)
-    {
-        switch (edits[i].type)
-        {
-            case Edit::Type::INSERT:
-            {
-                std::cout << "\033[32m+\t" << edits[i].old_line << "\t" << edits[i].new_line << "\033[0m\n";
-                break;
-            }
-            case Edit::Type::DELETE:
-            {
-                std::cout << "\033[31m-\t" << edits[i].old_line << "\t" << edits[i].new_line << "\033[0m\n";
-                break;
-            }
-            case Edit::Type::EQUAL:
-            {
-                std::cout << "\033[39m=\t" << edits[i].old_line << "\t" << edits[i].new_line << "\033[0m\n";
-                break;
-            }
-        }
-    }
-
+Siff::~Siff()
+{
     for (int i = 0; i < lines_1.size(); i++)
     {
         delete lines_1[i];
@@ -44,8 +21,6 @@ Siff::Siff(std::string file_1, std::string file_2)
         delete lines_2[i];
     }
 }
-
-Siff::~Siff() {}
 
 void Siff::read_lines(array<Line *> &lines, std::string input)
 {
@@ -61,7 +36,7 @@ void Siff::read_lines(array<Line *> &lines, std::string input)
     in.close();
 }
 
-void Siff::backtrack(array<Line *> &lines_1, array<Line *> &lines_2)
+void Siff::backtrack()
 {
     array<int> path;
     int x = lines_1.size(), y = lines_2.size();
@@ -127,7 +102,7 @@ void Siff::backtrack(array<Line *> &lines_1, array<Line *> &lines_2)
     }
 }
 
-void Siff::siff(array<Line *> &lines_1, array<Line *> &lines_2)
+void Siff::get_edits()
 {
     const int n = lines_1.size(), m = lines_2.size();
     const int max = n + m;
@@ -160,14 +135,37 @@ void Siff::siff(array<Line *> &lines_1, array<Line *> &lines_2)
 
             if (x >= n && y >= m)
             {
-                std::cout << d << "\n";
-                backtrack(lines_1, lines_2);
+                // std::cout << d << "\n";
+                backtrack();
                 return;
             }
         }
     }
 
-    std::cout << 0 << "\n";
+    // std::cout << 0 << "\n";
 }
 
-#undef CURSOR_INVIS
+void Siff::print_edits()
+{
+    for (int i = edits.size() - 1; i >= 0; i--)
+    {
+        switch (edits[i].type)
+        {
+            case Edit::Type::INSERT:
+            {
+                std::cout << "\033[32m+\t" << edits[i].new_line << "\033[0m\n";
+                break;
+            }
+            case Edit::Type::DELETE:
+            {
+                std::cout << "\033[31m-\t" << edits[i].old_line << "\033[0m\n";
+                break;
+            }
+            case Edit::Type::EQUAL:
+            {
+                std::cout << "\033[39m=\t" << edits[i].old_line << "\033[0m\n";
+                break;
+            }
+        }
+    }
+}

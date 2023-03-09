@@ -50,7 +50,7 @@ T &array<T>::operator[](int idx)
 {
     if (idx < 0)
     {
-        return elems[elems.size() + idx + 1];
+        return elems[elems.size() + idx];
     }
 
     return elems[idx];
